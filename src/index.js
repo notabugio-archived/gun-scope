@@ -89,41 +89,47 @@ export const scope = ({
   const on = fn => listeners.push(fn);
   const off = fn => (listeners = listeners.filter(x => x !== fn));
 
+  const load = (soul, data) => {
+    const existing = graph[soul];
+    let result = existing;
+
+    if (data === null) {
+      result = null;
+    } else if (data) {
+      result = existing ? mergeDeepRight(existing || {}, data) : data;
+    }
+    graph[soul] = result;
+    listeners.forEach(fn => fn(soul, result));
+    return result;
+  };
+
   const fetch = soul =>
-    (promises[soul] =
-      promises[soul] ||
-      new ZalgoPromise(ok => {
-        let readTimeout;
+    parentScope
+      ? parentScope.fetch(soul)
+      : (promises[soul] =
+          promises[soul] ||
+          new ZalgoPromise(ok => {
+            let readTimeout;
 
-        if (parentScope) return parentScope.fetch(soul);
-        if (!gun) return ok(null);
+            if (!gun) return ok(null);
 
-        const receive = data => {
-          clearTimeout(readTimeout);
-          const existing = graph[soul];
-          let result = existing;
+            const receive = data => {
+              clearTimeout(readTimeout);
+              ok(load(soul, data));
+            };
 
-          if (data === null) {
-            result = null;
-          } else if (data) {
-            result = existing ? mergeDeepRight(existing || {}, data) : data;
-          }
-          ok((graph[soul] = result));
-          listeners.forEach(fn => fn(soul, data));
-        };
+            readTimeout = setTimeout(() => {
+              if (!(soul in graph)) {
+                console.log("slow query", soul);
+                receive(null);
+              }
+            }, timeout);
 
-        readTimeout = setTimeout(() => {
-          if (!(soul in graph)) {
-            console.log("slow query", soul);
-            receive(null);
-          }
-        }, timeout);
-
-        if (typeof soul !== "string") throw new Error(`bad SOUL ${soul}`);
-        if (getter) getter(soul).then(receive);
-        if (!noGun) gun.get(soul).on(receive);
-        return undefined;
-      }));
+            if (typeof soul !== "string") throw new Error(`bad SOUL ${soul}`);
+            if (getter) getter(soul).then(receive);
+            if (!noGun) gun.get(soul).on(receive);
+            return undefined;
+          }));
 
   const cachedQuery = (name, queryFn, ...args) => {
     if (parentScope) return parentScope.cachedQuery(name, queryFn, ...args);
@@ -162,6 +168,7 @@ export const scope = ({
     cachedQuery,
     getGraph,
     getAccesses,
+    load,
     loadCachedResults
   };
   return thisScope;
