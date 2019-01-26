@@ -1,6 +1,6 @@
 {
   "name": "gun-scope",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cached query tools for gunDB useful for SSR",
   "main": "lib/gun-scope.js",
   "scripts": {

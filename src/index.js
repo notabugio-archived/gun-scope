@@ -93,12 +93,8 @@ export const scope = ({
     const existing = graph[soul];
     let result = existing;
 
-    if (data === null) {
-      result = null;
-    } else if (data) {
-      result = existing ? mergeDeepRight(existing || {}, data) : data;
-    }
-    graph[soul] = result;
+    if (data) result = existing ? mergeDeepRight(existing || {}, data) : data;
+    graph[soul] = result || graph[soul] || null;
     listeners.forEach(fn => fn(soul, result));
     return result;
   };
@@ -166,6 +162,7 @@ export const scope = ({
     known,
     fetch,
     cachedQuery,
+    parentScope,
     getGraph,
     getAccesses,
     load,
