@@ -127,22 +127,33 @@ export const scope = ({
             return undefined;
           }));
 
-  const cachedQuery = (name, queryFn, ...args) => {
-    if (parentScope) return parentScope.cachedQuery(name, queryFn, ...args);
+  const getCached = (name, ...args) => {
     const key = [name, ...args].map(x =>
       typeof x === "object" ? JSON.stringify(x) : `${x}`
     );
-    const cached = path(key, cachedResults);
+
+    return [path(key, cachedResults), key];
+  };
+
+  const cacheQuery = (name, queryFn, ...args) => {
+    if (parentScope) return parentScope.cacheQuery(name, queryFn, ...args);
+    const [cached, key] = getCached(name, ...args);
 
     if (onlyCache) return resolve(cached);
-    const promise = queryFn(thisScope, ...args).then(result => {
-      if (isCacheing || isCached) {
-        cachedResults = assocPath(key, result, cachedResults);
-      }
+    return queryFn(thisScope, ...args).then(result => {
+      if (isCacheing) cachedResults = assocPath(key, result, cachedResults);
       cachePromises = dissocPath(path, cachePromises);
       return result;
     });
+  };
 
+  const cachedQuery = (name, queryFn, ...args) => {
+    if (parentScope) return parentScope.cachedQuery(name, queryFn, ...args);
+    const [cached] = getCached(name, ...args);
+    const promise = cacheQuery(name, queryFn, ...args);
+
+    // if (!cached && isCached) console.log("cache miss", name, args);
+    if (!isCached) return promise;
     return cached ? resolve(nowOr(cached, promise)) : promise;
   };
 
@@ -161,6 +172,7 @@ export const scope = ({
     getCache,
     known,
     fetch,
+    cacheQuery,
     cachedQuery,
     parentScope,
     getGraph,
@@ -172,10 +184,12 @@ export const scope = ({
 };
 
 export const query = (queryFn, name = null) => {
+  const cacheQuery = (scopeObj, ...args) =>
+    scopeObj.cacheQuery(name, queryFn, ...args);
   const cachedQuery = (scopeObj, ...args) =>
     scopeObj.cachedQuery(name, queryFn, ...args);
   const doCachedQuery = name ? cachedQuery : queryFn;
-  const result = doCachedQuery;
+  const result = name ? cacheQuery : queryFn;
 
   result.query = queryFn;
   result.cached = doCachedQuery;
