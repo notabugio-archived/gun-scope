@@ -184,12 +184,10 @@ export const scope = ({
 };
 
 export const query = (queryFn, name = null) => {
-  const cacheQuery = (scopeObj, ...args) =>
-    scopeObj.cacheQuery(name, queryFn, ...args);
   const cachedQuery = (scopeObj, ...args) =>
     scopeObj.cachedQuery(name, queryFn, ...args);
   const doCachedQuery = name ? cachedQuery : queryFn;
-  const result = name ? cacheQuery : queryFn;
+  const result = name ? cachedQuery : queryFn;
 
   result.query = queryFn;
   result.cached = doCachedQuery;
