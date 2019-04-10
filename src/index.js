@@ -141,7 +141,11 @@ export const scope = ({
 
     if (onlyCache) return resolve(cached);
     return queryFn(thisScope, ...args).then(result => {
-      if (isCacheing) cachedResults = assocPath(key, result, cachedResults);
+      if (isCacheing) {
+        cachedResults = assocPath(key, result, cachedResults);
+      } else {
+        cachedResults = dissocPath(key, cachedResults);
+      }
       cachePromises = dissocPath(path, cachePromises);
       return result;
     });
