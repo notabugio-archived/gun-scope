@@ -1,5 +1,6 @@
 import {
   compose,
+  equals,
   dissocPath,
   assocPath,
   curry,
@@ -95,7 +96,7 @@ export const scope = ({
 
     if (data) result = existing ? mergeDeepRight(existing || {}, data) : data;
     graph[soul] = result || graph[soul] || null;
-    listeners.forEach(fn => fn(soul, result));
+    if (!equals(existing, result)) listeners.forEach(fn => fn(soul, result));
     return result;
   };
 
