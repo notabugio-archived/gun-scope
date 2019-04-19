@@ -124,7 +124,12 @@ export const scope = ({
 
             if (typeof soul !== "string") throw new Error(`bad SOUL ${soul}`);
             if (getter) getter(soul).then(receive);
-            if (!noGun) gun.get(soul).on(receive);
+            if (!noGun) {
+              const chain = gun.get(soul);
+
+              chain.on(receive);
+              if (chain.not) chain.not(() => receive(null));
+            }
             return undefined;
           }));
 
