@@ -94,7 +94,7 @@ export const scope = ({
     const existing = graph[soul];
     let result = existing;
 
-    if (data) result = existing ? mergeDeepRight(existing || {}, data) : data;
+    if (data) result = mergeDeepRight(existing || {}, data);
     graph[soul] = result || graph[soul] || null;
     if (!equals(existing, result)) listeners.forEach(fn => fn(soul, result));
     return result;
