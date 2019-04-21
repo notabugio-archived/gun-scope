@@ -127,7 +127,8 @@ export const scope = ({
             if (!noGun) {
               const chain = gun.get(soul);
 
-              chain.on(receive);
+              chain.once(receive);
+              chain.on(data => soul in graph && receive(data));
               if (chain.not) chain.not(() => receive(null));
             }
             return undefined;
