@@ -1,8 +1,8 @@
 {
   "name": "@notabug/gun-scope",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Cached query tools for gunDB useful for SSR",
-  "main": "lib/gun-scope.js",
+  "main": "lib/@notabug/gun-scope.js",
   "scripts": {
     "build": "webpack --env dev && webpack --env build && npm run test",
     "dev": "webpack --progress --colors --watch --env dev",
