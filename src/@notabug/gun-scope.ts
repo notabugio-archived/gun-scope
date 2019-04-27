@@ -72,6 +72,7 @@ export const scope = ({
   cache = null,
   getter,
   noGun = false,
+  onlyOnce = false,
   isCacheing = false,
   isCached = false,
   onlyCache = false
@@ -83,6 +84,7 @@ export const scope = ({
   cache: any
   getter: Function
   noGun: boolean
+  onlyOnce: boolean
   isCacheing: boolean
   isCached: boolean
   onlyCache: boolean
@@ -137,7 +139,7 @@ export const scope = ({
               const chain = gun.get(soul)
 
               chain.once(receive)
-              chain.on((data: any) => soul in graph && receive(data))
+              if (!onlyOnce) chain.on((data: any) => soul in graph && receive(data))
               if (chain.not) chain.not(() => receive(null))
             }
             return undefined
