@@ -91,7 +91,6 @@ export const scope = ({
 }) => {
   let thisScope: any
   let listeners: Function[] = []
-  let cachePromises = {}
   let promises: { [soul: string]: Promise<any> } = {}
   let cachedResults = { ...(cache || {}) }
   const accesses: any = {}
@@ -101,14 +100,23 @@ export const scope = ({
   const on = (fn: Function) => listeners.push(fn)
   const off = (fn: Function) => (listeners = listeners.filter(x => x !== fn))
 
-  const load = (soul: string, data: any) => {
+  const load = (soul: string, data: any, copy = false) => {
+    graph[soul] = data
+    listeners.forEach(fn => fn(soul, data))
+    return data
+
+    /*
     const existing = graph[soul]
     let result = existing
 
-    if (data) result = mergeDeepRight(existing || {}, data)
-    graph[soul] = result || graph[soul] || null
-    if (!equals(existing, result)) listeners.forEach(fn => fn(soul, result))
+    if (data) {
+      if (copy) {
+        result = mergeDeepRight(existing || {}, data)
+        graph[soul] = result || graph[soul] || null
+        if (!equals(existing, result)) listeners.forEach(fn => fn(soul, result))
+      }
     return result
+    */
   }
 
   const fetch = (soul: any) =>
@@ -162,7 +170,6 @@ export const scope = ({
       } else {
         cachedResults = dissocPath(key, cachedResults)
       }
-      cachePromises = dissocPath(key, cachePromises)
       return result
     })
   }
