@@ -108,9 +108,10 @@ export const scope = ({
 
             const receive = (data: any, ...args: any[]) => {
               clearTimeout(readTimeout)
-              if (!data) console.log('blank', soul, data, ...args)
               ok(load(soul, data))
             }
+
+            if (soul in graph) receive(graph[soul])
 
             readTimeout = setTimeout(() => {
               if (!(soul in graph)) {
