@@ -1,12 +1,16 @@
 {
   "name": "@notabug/gun-scope",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Cached query tools for gunDB useful for SSR",
-  "keywords": ["gundb"],
+  "keywords": [
+    "gundb"
+  ],
   "main": "dist/@notabug/gun-scope.umd.js",
   "module": "dist/@notabug/gun-scope.es5.js",
   "typings": "dist/types/gun-scope.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "author": "go1dfish <me@go1dfish.me>",
   "repository": {
     "type": "git",
@@ -34,7 +38,10 @@
     "travis-deploy-once": "travis-deploy-once"
   },
   "lint-staged": {
-    "{src,test}/**/*.ts": ["prettier --write", "git add"]
+    "{src,test}/**/*.ts": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "config": {
     "commitizen": {
@@ -47,8 +54,15 @@
     },
     "testEnvironment": "node",
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js"],
-    "coveragePathIgnorePatterns": ["/node_modules/", "/test/"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 90,
@@ -57,14 +71,18 @@
         "statements": 95
       }
     },
-    "collectCoverageFrom": ["src/*.{js,ts}"]
+    "collectCoverageFrom": [
+      "src/*.{js,ts}"
+    ]
   },
   "prettier": {
     "semi": false,
     "singleQuote": true
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",

@@ -1,10 +1,10 @@
-import * as R from "ramda"
-const { ZalgoPromise } = require("zalgo-promise")
+import * as R from 'ramda'
+const { ZalgoPromise } = require('zalgo-promise')
 export const Promise = ZalgoPromise
 export const { all, resolve } = ZalgoPromise
 
 const nodeKeys = (obj: any) =>
-  Object.keys(obj || {}).filter(key => key && key !== "_" && key !== "#")
+  Object.keys(obj || {}).filter(key => key && key !== '_' && key !== '#')
 
 export const nowOr = R.curry((defaultValue, promise) => {
   let result
@@ -23,7 +23,7 @@ const node = (scope: any, soul: string) =>
   new ZalgoPromise((ok: Function, fail: Function) => {
     const known = scope.known(soul)
 
-    if (typeof known !== "undefined") ok(known)
+    if (typeof known !== 'undefined') ok(known)
     scope
       .fetch(soul)
       .then(() => scope.known(soul))
@@ -33,7 +33,7 @@ const node = (scope: any, soul: string) =>
 
 const edge = (scope: any, key: string, parentaccess: Promise<any>) =>
   parentaccess.then(data => {
-    const soul = R.path([key, "#"], data)
+    const soul = R.path([key, '#'], data)
     const val = R.prop(key, data)
 
     return soul ? scope.get(soul).then() : val
@@ -43,10 +43,8 @@ const access = (scope: any, key: any, paccess: null | any = null) => {
   if (!key || key === []) throw new Error(`bad key ${key}`)
   let thisaccess: any
   const accesses: any = {}
-  const get = (gKey: string) =>
-    accesses[gKey] || (accesses[gKey] = access(scope, gKey, thisaccess))
-  const then = (fn: Function) =>
-    (paccess ? edge : node)(scope, key, paccess).then(fn || R.identity)
+  const get = (gKey: string) => accesses[gKey] || (accesses[gKey] = access(scope, gKey, thisaccess))
+  const then = (fn: Function) => (paccess ? edge : node)(scope, key, paccess).then(fn || R.identity)
   const keys = (fn: Function) => then(nodeKeys).then(fn || R.identity)
   const count = (fn: Function) => keys(R.length).then(fn || R.identity)
 
@@ -88,10 +86,8 @@ export const scope = ({
   const chains = [] as any[]
   const accesses: any = {}
   const graph = { ...defaultGraph }
-  const get = (soul: string) =>
-    accesses[soul] || (accesses[soul] = access(thisScope, soul))
-  const known = (soul: string) =>
-    parentScope ? parentScope.known(soul) : graph[soul]
+  const get = (soul: string) => accesses[soul] || (accesses[soul] = access(thisScope, soul))
+  const known = (soul: string) => (parentScope ? parentScope.known(soul) : graph[soul])
   const on = (fn: Function) => listeners.push(fn)
   const off = (fn: Function) => {
     listeners = listeners.filter(x => x !== fn)
@@ -125,14 +121,14 @@ export const scope = ({
 
             readTimeout = setTimeout(() => {
               if (!(soul in graph)) {
-                console.log("slow query", soul)
+                console.log('slow query', soul)
                 receive(null)
               }
             }, timeout)
 
-            if (typeof soul !== "string") throw new Error(`bad SOUL ${soul}`)
+            if (typeof soul !== 'string') throw new Error(`bad SOUL ${soul}`)
             if (getter) getter(soul).then(receive)
-            if (!noGun) {
+            if (!noGun && !getter) {
               const chain = gun.get(soul)
               if (unsub) chains.push(chain)
 
@@ -146,9 +142,7 @@ export const scope = ({
           }))
 
   const getCached = (name: any, ...args: any[]) => {
-    const key = [name, ...args].map(x =>
-      typeof x === "object" ? JSON.stringify(x) : `${x}`
-    )
+    const key = [name, ...args].map(x => (typeof x === 'object' ? JSON.stringify(x) : `${x}`))
 
     return [R.path(key, cachedResults), key]
   }
